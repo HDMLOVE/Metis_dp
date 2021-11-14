@@ -19,9 +19,10 @@ var tstype = flag.String("timestamp_type", "", "Type of timestamps to use")
 var promisc = flag.Bool("promisc", true, "Set promiscuous mode")
 
 func main() {
-	defer util.Run()
+	defer util.Run()()
 	var handle *pcap.Handle
 	var err error
+	fmt.Println("start...\n")
 	if *fname != "" {
 		if handle, err = pcap.OpenOffline(*fname); err != nil {
 			log.Fatal("pcap openOffline error:", err)
