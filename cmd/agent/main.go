@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-ini/ini"
+	"log"
 	_ "net"
+	"os"
 	_ "strings"
 
 	"github.com/google/gopacket"
@@ -10,9 +13,20 @@ import (
 	"github.com/google/gopacket/pcap"
 )
 
+// 加载配置问价 load_config
+func load_config(filename string) {
+	cfg, err := ini.Load(filename)
+	if err != nil {
+		log.Fatal("fail to read the file: \n", err)
+	}
+	fmt.Println("interface:", cfg.Section("captrue").Key("interface").String())
+	os.Exit(0)
+}
+
 func main() {
 
 	fmt.Println("packet start...")
+	load_config("agent.ini")
 
 	deviceName := "eth0"
 	snapLen := int32(65535)
