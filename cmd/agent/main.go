@@ -5,7 +5,6 @@ import (
 	"github.com/go-ini/ini"
 	"log"
 	_ "net"
-	"os"
 	_ "strings"
 
 	"github.com/google/gopacket"
@@ -25,33 +24,31 @@ type CapInfoSt struct {
 	size       string
 }
 
-var CapInfo CapInfoSt
+var capInfo CapInfoSt
 
-// loadConfig 加载配置问价
+// loadConfig 加载配置文件
 func loadConfig(filename string) {
 	cfg, err := ini.Load(filename)
 	if err != nil {
 		log.Fatal("fail to read the file: \n", err)
 	}
-	CapInfo.deviceName = cfg.Section("captrue").Key("interface").String()
-	CapInfo.filter = cfg.Section("captrue").Key("filter").String()
-	CapInfo.ip = cfg.Section("server").Key("ip").String()
-	CapInfo.port = cfg.Section("port").Key("port").String()
-	fmt.Println(CapInfo)
-	os.Exit(0)
+	capInfo.deviceName = cfg.Section("captrue").Key("deviceName").String()
+	capInfo.filter = cfg.Section("captrue").Key("filter").String()
+	capInfo.ip = cfg.Section("server").Key("ip").String()
+	capInfo.port = cfg.Section("port").Key("port").String()
+	fmt.Println(capInfo)
 }
 
+// 主函数入口
 func main() {
 
 	fmt.Println("packet start...")
 	loadConfig("agent.ini")
 
-	deviceName := "eth0"
+	deviceName := capInfo.deviceName
 	snapLen := int32(65535)
-	port := uint16(22)
-	filter := getFilter(port)
-	fmt.Printf("device:%v, snapLen:%v, port:%v\n", deviceName, snapLen, port)
-	fmt.Println("filter:", filter)
+	filter := capInfo.filter
+	fmt.Printf("device:%v, snapLen:%v, filter:%v\n", deviceName, snapLen, filter)
 
 	//打开网络接口，抓取在线数据
 	handle, err := pcap.OpenLive(deviceName, snapLen, true, pcap.BlockForever)
@@ -84,10 +81,4 @@ func main() {
 		// tcp payload，也即是tcp传输的数据
 		fmt.Printf("tcp payload:%v\n", tcp.Payload)
 	}
-}
-
-//定义过滤器
-func getFilter(port uint16) string {
-	filter := fmt.Sprintf("tcp and ((src port %v) or (dst port %v))", port, port)
-	return filter
 }
