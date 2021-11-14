@@ -13,20 +13,38 @@ import (
 	"github.com/google/gopacket/pcap"
 )
 
-// 加载配置问价 load_config
-func load_config(filename string) {
+// CapInfo 配置文件信息
+type CapInfoSt struct {
+	deviceName string
+	filter     string
+	ip         string
+	port       string
+	cpu        string
+	mem        string
+	dir        string
+	size       string
+}
+
+var CapInfo CapInfoSt
+
+// loadConfig 加载配置问价
+func loadConfig(filename string) {
 	cfg, err := ini.Load(filename)
 	if err != nil {
 		log.Fatal("fail to read the file: \n", err)
 	}
-	fmt.Println("interface:", cfg.Section("captrue").Key("interface").String())
+	CapInfo.deviceName = cfg.Section("captrue").Key("interface").String()
+	CapInfo.filter = cfg.Section("captrue").Key("filter").String()
+	CapInfo.ip = cfg.Section("server").Key("ip").String()
+	CapInfo.port = cfg.Section("port").Key("port").String()
+	fmt.Println(CapInfo)
 	os.Exit(0)
 }
 
 func main() {
 
 	fmt.Println("packet start...")
-	load_config("agent.ini")
+	loadConfig("agent.ini")
 
 	deviceName := "eth0"
 	snapLen := int32(65535)
