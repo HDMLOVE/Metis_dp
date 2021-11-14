@@ -39,6 +39,15 @@ func loadConfig(filename string) {
 	fmt.Println(capInfo)
 }
 
+func packetHandle(c <-chan string) {
+	select {
+	case <-c:
+		fmt.Println("test")
+	default:
+		fmt.Println("aaaa")
+	}
+}
+
 // 主函数入口
 func main() {
 
@@ -65,6 +74,9 @@ func main() {
 	}
 	defer handle.Close()
 
+	//c := make(chan TCP, 100)
+	//go packetHandle(c)
+
 	// 抓包
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	packetSource.NoCopy = true
@@ -74,12 +86,13 @@ func main() {
 			continue
 		}
 
-		fmt.Printf("packet:%v\n", packet)
+		//fmt.Printf("packet:%v\n", packet.Data())
 
 		// tcp 层
 		tcp := packet.TransportLayer().(*layers.TCP)
-		fmt.Printf("tcp:%v\n", tcp)
+		//c <- tcp
+		fmt.Printf("\ntcp:%v\n", tcp)
 		// tcp payload，也即是tcp传输的数据
-		fmt.Printf("tcp payload:%v\n", tcp.Payload)
+		//fmt.Printf("tcp payload:%v\n", tcp.Payload)
 	}
 }
