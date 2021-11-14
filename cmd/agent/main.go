@@ -43,6 +43,7 @@ func loadConfig(filename string) {
 func main() {
 
 	fmt.Println("packet start...")
+	// 加载配置文件
 	loadConfig("agent.ini")
 
 	deviceName := capInfo.deviceName
