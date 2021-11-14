@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -22,7 +23,7 @@ func (s *Server) Stop() {
 func serverHandler(s *Server) {
 	for {
 		select {
-		case s.serverStopChan == nil:
+		case <-s.serverStopChan:
 			return
 		default:
 			// do something ...
@@ -31,7 +32,10 @@ func serverHandler(s *Server) {
 }
 
 func main() {
-	go serverHandler()
-	time.Sleep(time.Second() * 5)
+	var s Server
+	go serverHandler(&s)
+	time.Sleep(time.Second * 5)
+	s.Stop()
 	fmt.Println("vim-go")
+	select {}
 }
