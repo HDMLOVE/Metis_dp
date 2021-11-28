@@ -2,40 +2,30 @@ package main
 
 import (
 	"fmt"
-	"sync"
-	"time"
 )
 
-type Server struct {
-	serverStopChan chan struct{}
-	stopWg         sync.WaitGroup
+type Person struct {
+	Name    string
+	Age     uint8
+	Address Addr
 }
 
-func (s *Server) Stop() {
-	if s.serverStopChan == nil {
-		panic("gorpc.Server: server msut be started before stopping it")
-	}
-	close(s.serverStopChan)
-	s.stopWg.Wait()
-	s.serverStopChan = nil
+type Addr struct {
+	city     string
+	district string
 }
 
-func serverHandler(s *Server) {
-	for {
-		select {
-		case <-s.serverStopChan:
-			return
-		default:
-			// do something ...
-		}
-	}
+func testTranslateStruct() {
+	personChan := make(chan Person, 1)
+	person := Person{"xiaoluo", 18, Addr{"shenzhen", "bao'an"}}
+	personChan <- person
+	fmt.Printf("%v\n", person)
+
+	person.Address = Addr{"guangzhou", "tianhe"}
+	newPerson := <-personChan
+	fmt.Printf("%v", newPerson)
 }
 
 func main() {
-	var s Server
-	go serverHandler(&s)
-	time.Sleep(time.Second * 5)
-	s.Stop()
-	fmt.Println("vim-go")
-	select {}
+	testTranslateStruct()
 }

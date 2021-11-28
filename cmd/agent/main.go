@@ -39,7 +39,7 @@ func loadConfig(filename string) {
 	fmt.Println(capInfo)
 }
 
-func packetHandle(c <-chan string) {
+func packetHandle(c <-chan layers.TCP) {
 	select {
 	case <-c:
 		fmt.Println("test")
@@ -74,7 +74,7 @@ func main() {
 	}
 	defer handle.Close()
 
-	//c := make(chan TCP, 100)
+	//c := make(chan layers.TCP, 100)
 	//go packetHandle(c)
 
 	// 抓包
@@ -90,8 +90,7 @@ func main() {
 
 		// tcp 层
 		tcp := packet.TransportLayer().(*layers.TCP)
-		//c <- tcp
-		fmt.Printf("\ntcp:%v\n", tcp)
+		fmt.Printf("\ntcp:%t\n", tcp)
 		// tcp payload，也即是tcp传输的数据
 		//fmt.Printf("tcp payload:%v\n", tcp.Payload)
 	}

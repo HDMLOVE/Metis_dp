@@ -1,5 +1,5 @@
 all:
-	go build main.go
+	go build -o a.out main.go
 
 clean:
-	rm -rf main
+	rm -rf a.out
